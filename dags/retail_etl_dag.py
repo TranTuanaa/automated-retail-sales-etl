@@ -8,11 +8,12 @@ import os
 sys.path.insert(0, '/opt/airflow')
 
 from scripts.etl_pipeline import run_etl_pipeline
+from scripts.create_table import create_tables
 
 default_args = {
     'owner': 'student',
     'depends_on_past': False,
-    'retries': 3,                    # Tăng retry lên 3
+    'retries': 3,                    
     'retry_delay': timedelta(minutes=2),
     'email_on_failure': False,
 }
@@ -27,7 +28,12 @@ with DAG(
     tags=['retail', 'etl', 'postgres', 'star_schema'],
     max_active_runs=1,              # Chỉ cho phép 1 lần chạy cùng lúc
 ) as dag:
-
+    create_tables_task = PythonOperator(
+        task_id='create_tables',
+        python_callable=create_tables,
+        provide_context=True,
+    )
+    
     # Task chính
     run_etl = PythonOperator(
         task_id='run_retail_etl_pipeline',
