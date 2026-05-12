@@ -35,11 +35,8 @@ def load_to_postgres(df):
     latest_date = get_latest_date()
 
     if latest_date:
-
         print(f"📅 Latest invoice_date trong DB: {latest_date}")
-
         df = df[df['invoice_date'] > latest_date]
-
         print(f"🆕 Records mới cần load: {len(df):,}")
 
     else:
@@ -52,53 +49,33 @@ def load_to_postgres(df):
     print("👤 Loading dim_customer...")
 
     dim_customer = (
-        df[['customer_id', 'country']]
-        .drop_duplicates(subset=['customer_id'])
+        df[['customer_id', 'country']].drop_duplicates(subset=['customer_id'])
     )
 
-    dim_customer.to_sql(
-        'dim_customer',
-        engine,
-        if_exists='append',
-        index=False,
-        method='multi'
-    )
+    dim_customer.to_sql('dim_customer',engine,if_exists='append',index=False,method='multi')
 
     print(f"✅ Loaded {len(dim_customer):,} records vào dim_customer")
     print("📦 Loading dim_product...")
 
     dim_product = (
-        df[['stock_code', 'description']]
-        .drop_duplicates(subset=['stock_code'])
+        df[['stock_code', 'description']].drop_duplicates(subset=['stock_code'])
     )
 
-    dim_product.to_sql(
-        'dim_product',
-        engine,
-        if_exists='append',
-        index=False,
-        method='multi'
-    )
+    dim_product.to_sql('dim_product',engine,if_exists='append',index=False,method='multi')
 
     print(f"✅ Loaded {len(dim_product):,} records vào dim_product")
     print("📅 Loading dim_date...")
 
     dim_date = pd.DataFrame({
-        'full_date': pd.to_datetime(df['invoice_date'].dt.date)
-    }).drop_duplicates(subset=['full_date'])
+    'full_date': pd.to_datetime(df['invoice_date'].dt.date)}).drop_duplicates(subset=['full_date'])
 
     dim_date['year'] = dim_date['full_date'].dt.year
     dim_date['month'] = dim_date['full_date'].dt.month
     dim_date['day'] = dim_date['full_date'].dt.day
     dim_date['weekday'] = dim_date['full_date'].dt.day_name()
 
-    dim_date.to_sql(
-        'dim_date',
-        engine,
-        if_exists='append',
-        index=False,
-        method='multi'
-    )
+    # Thêm cột date_id nếu cần (hoặc để DB tự generate)
+    dim_date.to_sql('dim_date', engine, if_exists='append', index=False, method='multi')
 
     print(f"✅ Loaded {len(dim_date):,} records vào dim_date")
     print("💰 Loading fact_sales...")
