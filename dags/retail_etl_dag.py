@@ -1,5 +1,5 @@
 from airflow import DAG  # type: ignore
-from airflow.operators.python import PythonOperator # type: ignore
+from airflow.providers.standard.operators.python import PythonOperator # type: ignore
 from datetime import datetime, timedelta
 import sys
 import os
@@ -31,15 +31,12 @@ with DAG(
     create_tables_task = PythonOperator(
         task_id='create_tables',
         python_callable=create_tables,
-        provide_context=True,
     )
-    
+
     # Task chính
     run_etl = PythonOperator(
         task_id='run_retail_etl_pipeline',
         python_callable=run_etl_pipeline,
-        provide_context=True,       # Hỗ trợ lấy context nếu sau này cần
     )
 
-    # Có thể thêm task create_tables sau này
-    run_etl # type: ignore
+    create_tables_task >> run_etl # type: ignore

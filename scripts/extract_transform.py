@@ -44,8 +44,8 @@ def extract_and_transform():
     df['CustomerID'] = df['CustomerID'].astype('int64')
 
     # 6. Thêm cột Year, Month
-    df['Year'] = df['InvoiceDate'].dt.year
-    df['Month'] = df['InvoiceDate'].dt.month
+    df['year'] = df['InvoiceDate'].dt.year
+    df['month'] = df['InvoiceDate'].dt.month
 
     # 7. Rename cột (chuẩn snake_case)
     df = df.rename(columns={
