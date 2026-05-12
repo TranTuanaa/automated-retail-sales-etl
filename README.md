@@ -23,8 +23,8 @@ Mình nâng cấp từ Project 1 (script Python thủ công) lên pipeline ETL t
    docker compose up -d
    ```
 2. Truy cập Airflow UI: http://localhost:8080
-   (Username/Password: airflow / airflow)
-   Vào Dags → tìm retail_etl_pipeline → bật toggle và Trigger
+ - (Username/Password: airflow / airflow)
+ - Vào Dags → tìm retail_etl_pipeline → bật toggle và Trigger
 
 ### Cấu trúc thư mục
  - dags/ → chứa DAG Airflow

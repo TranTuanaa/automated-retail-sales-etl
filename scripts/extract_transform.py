@@ -5,18 +5,27 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def extract_and_transform():
-    """Extract từ Excel và Transform dữ liệu"""
+    """Extract từ Excel + Transform dữ liệu"""
     print("📥 Bắt đầu Extract dữ liệu từ Excel...")
 
-    # Đường dẫn đến file Excel
-    data_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "Online Retail.xlsx")
+    # === Đọc đường dẫn từ .env (dễ thay đổi sau này) ===
+    data_folder = os.getenv('DATA_FOLDER', 'data')
+    file_name = os.getenv('SOURCE_FILE', 'Online Retail.xlsx')
     
-    # Extract
-    df = pd.read_excel(data_path)
-    print(f"   ✅ Đọc xong {len(df):,} records từ Excel")
+    # Tạo đường dẫn đầy đủ
+    base_dir = os.path.dirname(os.path.dirname(__file__))
+    data_path = os.path.join(base_dir, data_folder, file_name)
 
-    # Transform
-    print("🔄 Đang Transform dữ liệu...")
+    if not os.path.exists(data_path):
+        raise FileNotFoundError(f"❌ Không tìm thấy file: {data_path}")
+
+    # Extract
+    print(f"   Đang đọc file: {file_name}")
+    df = pd.read_excel(data_path)
+    print(f"   ✅ Đọc xong {len(df):,} records")
+
+    # ==================== TRANSFORM ====================
+    print("🔄 Đang Transform và làm sạch dữ liệu...")
 
     # 1. Xóa dòng thiếu CustomerID
     df = df.dropna(subset=['CustomerID'])
@@ -24,20 +33,21 @@ def extract_and_transform():
     # 2. Xóa duplicate
     df = df.drop_duplicates()
 
-    # 3. Lọc Quantity & UnitPrice > 0
+    # 3. Lọc dữ liệu hợp lệ
     df = df[(df['Quantity'] > 0) & (df['UnitPrice'] > 0)]
 
     # 4. Tính TotalAmount
     df['TotalAmount'] = df['Quantity'] * df['UnitPrice']
 
-    # 5. Chuyển InvoiceDate thành datetime
+    # 5. Chuyển kiểu dữ liệu
     df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'])
+    df['CustomerID'] = df['CustomerID'].astype('int64')
 
-    # 6. Thêm Year và Month
+    # 6. Thêm cột Year, Month
     df['Year'] = df['InvoiceDate'].dt.year
     df['Month'] = df['InvoiceDate'].dt.month
 
-    # 7. Đổi tên cột cho khớp với bảng fact_sales
+    # 7. Rename cột (chuẩn snake_case)
     df = df.rename(columns={
         'InvoiceNo': 'invoice_no',
         'StockCode': 'stock_code',
@@ -47,16 +57,16 @@ def extract_and_transform():
         'CustomerID': 'customer_id',
         'Country': 'country',
         'InvoiceDate': 'invoice_date',
-        'TotalAmount': 'total_amount',   
-        'Year': 'year',                 
-        'Month': 'month'                 
+        'TotalAmount': 'total_amount'
     })
 
-    print(f"   ✅ Transform xong! Còn lại {len(df):,} records sạch sẽ")
-    
+    print(f"   ✅ Transform hoàn tất! Còn lại {len(df):,} records")
+    print(f"   Tổng doanh thu: ${df['total_amount'].sum():,.2f}")
+
     return df
+
 
 if __name__ == "__main__":
     df = extract_and_transform()
-    print("\n✅ Extract & Transform HOÀN TẤT!")
+    print("\n🎉 Extract & Transform HOÀN TẤT!")
     print(df.head())
