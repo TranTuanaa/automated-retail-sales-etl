@@ -1,36 +1,28 @@
 # Retail Sales ETL Pipeline with Apache Airflow
 
-**Project 2** – Automated Retail ETL Pipeline
-
-Mình nâng cấp từ Project 1 (script Python thủ công) lên pipeline ETL tự động chạy bằng Apache Airflow.
+Project này tự động hóa quy trình ETL cho bộ dữ liệu bán lẻ. Pipeline đọc file `Online Retail.xlsx`, làm sạch dữ liệu bằng Pandas, rồi load vào PostgreSQL theo mô hình star schema. Airflow được dùng để điều phối và lên lịch chạy.
 
 ### Tech Stack
-- Python + Pandas
-- Apache Airflow (DAG)
+- Python
+- Pandas
+- Apache Airflow
 - PostgreSQL
-- Docker & Docker Compose
+- Docker Compose
 - SQLAlchemy
 
-### Những gì đã làm
-- Xây dựng ETL end-to-end (Extract → Transform → Load)
-- Thiết kế Star Schema (fact_sales + dim_customer, dim_product, dim_date)
-- Tạo DAG Airflow chạy theo lịch tự động
-- Sử dụng Docker để chạy môi trường
-
 ### Cách chạy
-1. Khởi động Docker:
+1. Chạy Docker:
    ```bash
    docker compose up -d
    ```
-2. Truy cập Airflow UI: http://localhost:8080
- - (Username/Password: airflow / airflow)
- - Vào Dags → tìm retail_etl_pipeline → bật toggle và Trigger
+2. Truy cập Airflow UI tại `http://localhost:8080`
+3. Đăng nhập bằng `airflow / airflow`
+4. Trigger DAG `retail_etl_pipeline`
 
 ### Cấu trúc thư mục
- - dags/ → chứa DAG Airflow
- - scripts/ → code ETL
- - data/ → file Excel nguồn
+- `dags/` chứa DAG Airflow
+- `scripts/` chứa code ETL
+- `data/` chứa file Excel đầu vào
 
-### Author: 
- - Trần Anh Tuấn
- - Sinh viên Toán Ứng Dụng - (TDTU)
+### Tác giả
+Trần Anh Tuấn - Sinh viên Toán Ứng dụng (TDTU)
