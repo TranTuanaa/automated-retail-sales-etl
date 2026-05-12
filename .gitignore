@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# Env
+.env
+
+# Airflow
+logs/
+airflow.cfg
+airflow.db
+
+# Docker
+postgres_data/
+
+# OS
+.DS_Store
